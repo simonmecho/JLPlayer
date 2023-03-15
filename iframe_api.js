@@ -14,18 +14,28 @@ JL.Player = function (elementId, options) {
     this.init();
 };
 
-JL.Player.prototype.init = function () {
+JL.Player.prototype.init = async function () {
     // logic to initialize the player
-    _createVideoElement(this.container, this.width, this.height);
-    _createControls(this.container);
+    const url =
+        "https://video.avkchina.cn/api/videoFindSdk?id=" + this.options.vid;
+    try {
+        let response = await fetch(url, {
+            method: "GET",
+        });
+        let { data } = await response.json();
+        _createVideoElement(path, this.container, this.width, this.height);
+        _createControls(this.container);
+    } catch (e) {
+        console.log(e);
+    }
 };
 
-function _createVideoElement(container, width, height) {
+function _createVideoElement(path, container, width, height) {
     let videoElement = document.createElement("video");
     videoElement.width = width;
     videoElement.height = height;
     videoElement.innerHTML = `
-      <source src="path/to/your/video.mp4" type="video/mp4">
+      <source src="${path}" type="video/mp4">
       Your browser does not support the video tag.
     `;
     container.appendChild(videoElement);
