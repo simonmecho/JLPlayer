@@ -23,7 +23,12 @@ JL.Player.prototype.init = async function () {
             method: "GET",
         });
         let { data } = await response.json();
-        _createVideoElement(path, this.container, this.width, this.height);
+        _createVideoElement(
+            data.video,
+            this.container,
+            this.width,
+            this.height
+        );
         _createControls(this.container);
     } catch (e) {
         console.log(e);
