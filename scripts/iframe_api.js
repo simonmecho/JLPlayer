@@ -42,7 +42,31 @@ JL.Player.prototype.init = function () {
 };
 
 JL.Player.prototype.__createVideoElement = function (path) {
-    const videoElement = document.createElement("video");
+    const iframeElement = document.createElement("iframe");
+    iframeElement.width = this.options.width || "640";
+    iframeElement.height = this.options.height || "360";
+    // Set the srcdoc attribute with the content you want to add
+    //     iframeElement.srcdoc = `
+    //     <!DOCTYPE html>
+    //     <html lang="en">
+    //     <head>
+    //       <meta charset="UTF-8">
+    //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    //       <title>Iframe Content</title>
+    //       <style>
+    //         body {
+    //           background-color: lightblue;
+    //         }
+    //       </style>
+    //     </head>
+    //     <body>
+    //     </body>
+    //     </html>
+    //   `;
+    this.container.parentNode.replaceChild(iframeElement, this.container);
+
+    const iframeDoc = iframeElement.contentDocument;
+    const videoElement = iframeDoc.createElement("video");
     videoElement.innerHTML = `
       <source src="${path}" type="video/mp4">
       Your browser does not support the video tag.
@@ -76,8 +100,8 @@ JL.Player.prototype.__createVideoElement = function (path) {
         }
     }
     this.videoElement = videoElement;
-
-    this.container.appendChild(videoElement);
+    this.iframeElement = iframeElement;
+    iframeDoc.body.appendChild(videoElement);
 };
 
 // controls
@@ -110,6 +134,39 @@ JL.Player.prototype.setVolume = function (volume) {
 
 JL.Player.prototype.getVolume = function () {
     return this.videoElement.volume * 100;
+};
+
+JL.Player.prototype.getPlayerState = function () {
+    // -1 - unstarted
+    if (this.videoElement.currentTime === 0 && this.videoElement.paused) {
+        return states.UNSTARTED;
+    }
+    // 0 - ended
+    if (this.videoElement.ended) {
+        return states.ENDED;
+    }
+    // 1 - playing
+    if (!this.videoElement.paused && this.videoElement.readyState >= 4) {
+        return states.PLAYING;
+    }
+    // 2 - paused
+    if (this.videoElement.paused && this.videoElement.currentTime > 0) {
+        return states.PAUSED;
+    }
+    // 3 - buffering
+    if (this.videoElement.readyState < 4 && this.videoElement.readyState > 0) {
+        return states.BUFFERING;
+    }
+    // 5 - video cued
+    if (this.videoElement.readyState === 0) {
+        return states.CUED;
+    }
+
+    return states.UNSTARTED;
+};
+
+JL.Player.prototype.getIframe = function () {
+    return this.iframeElement;
 };
 
 var ready = window["onJLIframeAPIReady"];
