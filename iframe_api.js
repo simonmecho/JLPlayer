@@ -50,6 +50,9 @@ function _createControls(container) {
     container.appendChild(controls);
 }
 
+var ready = window["onJLIframeAPIReady"];
+ready && ready();
+
 //   play() {
 //     this.videoElement.play();
 //   }
