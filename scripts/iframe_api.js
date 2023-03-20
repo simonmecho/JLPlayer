@@ -45,6 +45,11 @@ JL.Player.prototype.__createVideoElement = function (path) {
     const iframeElement = document.createElement("iframe");
     iframeElement.width = this.options.width || "640";
     iframeElement.height = this.options.height || "360";
+    iframeElement.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframeElement.frameBorder = "0";
+    iframeElement.allowFullscreen = "1";
+    iframeElement.scrolling = "no";
     // Set the srcdoc attribute with the content you want to add
     //     iframeElement.srcdoc = `
     //     <!DOCTYPE html>
@@ -76,27 +81,49 @@ JL.Player.prototype.__createVideoElement = function (path) {
     const { playerVars, events } = this.options;
     if (playerVars) {
         playerVars.loop && videoElement.setAttribute("loop", "");
-        playerVars.autoplay && videoElement.setAttribute("autoplay", "");
         playerVars.controls && videoElement.setAttribute("controls", "");
+        if (playerVars.autoplay) {
+            videoElement.autoplay = true;
+            videoElement.muted = true;
+        }
     }
     if (events) {
-        // events.onReady &&
-        //     videoElement.addEventListener("oncanplay", events.onReady);
-
         const { onStateChange, onReady } = events;
-        if (onReady) {
-            videoElement.onloadeddata = onReady;
-        }
+        onReady && videoElement.addEventListener("canplay", (e) => onReady(e));
+
         if (onStateChange) {
-            videoElement.oncuechange = (e) =>
-                onStateChange({ data: states.CUED });
-            videoElement.onended = (e) => onStateChange({ data: states.ENDED });
-            videoElement.onpause = (e) =>
-                onStateChange({ data: states.PAUSED });
-            videoElement.onplaying = (e) =>
-                onStateChange({ data: states.PLAYING });
-            videoElement.onwaiting = (e) =>
-                onStateChange({ data: states.BUFFERING });
+            videoElement.addEventListener("loadstart", () =>
+                onStateChange({
+                    data: states.UNSTARTED,
+                })
+            );
+            videoElement.addEventListener("ended", () =>
+                onStateChange({
+                    data: states.ENDED,
+                })
+            );
+            videoElement.addEventListener("play", () =>
+                onStateChange({
+                    data: states.PLAYING,
+                })
+            );
+            videoElement.addEventListener("pause", () =>
+                onStateChange({
+                    data: states.PAUSED,
+                })
+            );
+            videoElement.addEventListener("waiting", () =>
+                onStateChange({
+                    data: states.BUFFERING,
+                })
+            );
+            videoElement.addEventListener("canplay", () => {
+                if (videoElement.currentTime === 0) {
+                    onStateChange({
+                        data: states.CUED,
+                    });
+                }
+            });
         }
     }
     this.videoElement = videoElement;
@@ -106,12 +133,10 @@ JL.Player.prototype.__createVideoElement = function (path) {
 
 // controls
 JL.Player.prototype.playVideo = function () {
-    if (!this.videoElement.paused) return;
     this.videoElement.play();
 };
 
-JL.Player.prototype.pauseVideo = function () {
-    if (this.videoElement.paused) return;
+JL.Player.prototype.stopVideo = function () {
     this.videoElement.pause();
 };
 
