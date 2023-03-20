@@ -78,13 +78,13 @@ JL.Player.prototype.__createVideoElement = function (path) {
     `;
     videoElement.width = this.options.width || "640";
     videoElement.height = this.options.height || "360";
+    videoElement.muted = true;
     const { playerVars, events } = this.options;
     if (playerVars) {
         playerVars.loop && videoElement.setAttribute("loop", "");
         playerVars.controls && videoElement.setAttribute("controls", "");
         if (playerVars.autoplay) {
             videoElement.autoplay = true;
-            videoElement.muted = true;
         }
     }
     if (events) {
