@@ -43,31 +43,15 @@ JL.Player.prototype.init = function () {
 
 JL.Player.prototype.__createVideoElement = function (path) {
     const iframeElement = document.createElement("iframe");
-    iframeElement.width = this.options.width || "640";
-    iframeElement.height = this.options.height || "360";
+    iframeElement.style.width = this.options.width || "100%";
+    iframeElement.style.height = this.options.height || "100%";
+    iframeElement.style.margin = "0";
+    iframeElement.style.padding = "0";
     iframeElement.allow =
         "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
     iframeElement.frameBorder = "0";
     iframeElement.allowFullscreen = "1";
     iframeElement.scrolling = "no";
-    // Set the srcdoc attribute with the content you want to add
-    //     iframeElement.srcdoc = `
-    //     <!DOCTYPE html>
-    //     <html lang="en">
-    //     <head>
-    //       <meta charset="UTF-8">
-    //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    //       <title>Iframe Content</title>
-    //       <style>
-    //         body {
-    //           background-color: lightblue;
-    //         }
-    //       </style>
-    //     </head>
-    //     <body>
-    //     </body>
-    //     </html>
-    //   `;
     this.container.parentNode.replaceChild(iframeElement, this.container);
 
     const iframeDoc = iframeElement.contentDocument;
@@ -76,8 +60,8 @@ JL.Player.prototype.__createVideoElement = function (path) {
       <source src="${path}" type="video/mp4">
       Your browser does not support the video tag.
     `;
-    videoElement.width = this.options.width || "640";
-    videoElement.height = this.options.height || "360";
+    videoElement.style.width = this.options.width || "100%";
+    videoElement.style.height = this.options.height || "100%";
     videoElement.muted = true;
     const { playerVars, events } = this.options;
     if (playerVars) {
@@ -94,32 +78,38 @@ JL.Player.prototype.__createVideoElement = function (path) {
         if (onStateChange) {
             videoElement.addEventListener("loadstart", () =>
                 onStateChange({
+                    target: this,
                     data: states.UNSTARTED,
                 })
             );
             videoElement.addEventListener("ended", () =>
                 onStateChange({
+                    target: this,
                     data: states.ENDED,
                 })
             );
             videoElement.addEventListener("play", () =>
                 onStateChange({
+                    target: this,
                     data: states.PLAYING,
                 })
             );
             videoElement.addEventListener("pause", () =>
                 onStateChange({
+                    target: this,
                     data: states.PAUSED,
                 })
             );
             videoElement.addEventListener("waiting", () =>
                 onStateChange({
+                    target: this,
                     data: states.BUFFERING,
                 })
             );
             videoElement.addEventListener("canplay", () => {
                 if (videoElement.currentTime === 0) {
                     onStateChange({
+                        target: this,
                         data: states.CUED,
                     });
                 }

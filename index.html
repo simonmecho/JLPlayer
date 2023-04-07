@@ -8,13 +8,15 @@
     <title>Document</title>
 </head>
 
-<body>
-    <div id="player"></div>
+<body style="background-color: gray;">
+    <div style="height: 500px;width: 500px;">
+        <div id="player"></div>
+    </div>
 
     <script>
         let tag = document.createElement("script");
         tag.async = true;
-        // tag.src = "https://cdn.jsdelivr.net/gh/simonmecho/JLPlayer/api/iframe_api.js";
+        // tag.src = "https://cdn.jsdelivr.net/gh/simonmecho/JLPlayer/apis/iframe_api.js";
         tag.src = './apis/iframe_api.js';
         let firstScriptTag = document.getElementsByTagName("script")[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -22,8 +24,8 @@
         let player;
         function onJLIframeAPIReady() {
             player = new JL.Player("player", {
-                height: "640",
-                width: "390",
+                // height: "640",
+                // width: "390",
                 vid: "17",
                 playerVars: {
                     autoplay: 1,
@@ -44,15 +46,88 @@
         }
 
         var done = false;
-        function onPlayerStateChange({ data }) {
-            if (data == JL.PlayerState.PLAYING && !done) {
-                setTimeout(stopVideo, 6000);
-                done = true;
-            }
-        }
+        // function onPlayerStateChange({ data }) {
+        //     if (data == JL.PlayerState.PLAYING && !done) {
+        //         setTimeout(stopVideo, 6000);
+        //         done = true;
+        //     }
+        // }
 
         function stopVideo() {
             player.stopVideo();
+        }
+
+        function onPlayerStateChange(e) {
+            const player = e.target;
+            const iframe = player.getIframe();
+            const container = iframe.parentNode;
+            console.log('data: ', e.data);
+            console.log('player: ', player);
+            // if (e.data === JL.PlayerState.PLAYING) {
+            //     classList.remove(container, pausedClassName);
+
+            //     classList.remove(container, endedClassName);
+
+            //     classList.add(container, playingClassName);
+
+
+
+            //     // Add player to array of playing videos
+
+            //     playingVideos.push(iframe);
+
+
+
+            //     playingVideos.forEach(playingVideo => {
+
+            //         if (playingVideo !== iframe) {
+
+            //             let videoId = getDOMID(playingVideo.parentNode);
+
+            //             if (videoPlayers[videoId]) {
+
+            //                 videoPlayers[videoId].pauseVideo();
+
+            //             }
+
+            //         }
+
+            //     });
+            // } else if (e.data === JL.PlayerState.PAUSED) {
+            //     classList.remove(container, playingClassName);
+
+            //     classList.add(container, pausedClassName);
+
+            //     playerStopped(player);
+
+            // } else if (e.data === JL.PlayerState.ENDED) {
+
+
+
+            //     // Video ended
+
+            //     // -----------
+
+
+
+            //     // Add class to wrapper, telling the video has ended
+
+            //     classList.remove(container, playingClassName);
+
+            //     classList.add(container, endedClassName);
+
+
+
+            //     // Remove player from array of playing videos
+
+            //     playerStopped(player);
+
+
+
+            // }
+
+
+
         }
     </script>
 </body>
