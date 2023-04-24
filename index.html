@@ -16,8 +16,8 @@
     <script>
         let tag = document.createElement("script");
         tag.async = true;
-        // tag.src = "https://cdn.jsdelivr.net/gh/simonmecho/JLPlayer/apis/iframe_api.js";
-        tag.src = './apis/iframe_api.js';
+        // tag.src = "https://cdn.jsdelivr.net/gh/simonmecho/JLPlayer/apis/iframe_api_230407.js";
+        tag.src = './apis/iframe_api_230407.js';
         let firstScriptTag = document.getElementsByTagName("script")[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -26,7 +26,7 @@
             player = new JL.Player("player", {
                 // height: "640",
                 // width: "390",
-                vid: "17",
+                vid: "21",
                 playerVars: {
                     autoplay: 1,
                     loop: 1,

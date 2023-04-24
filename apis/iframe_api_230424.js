@@ -55,6 +55,7 @@ JL.Player.prototype.__createVideoElement = function (path) {
     this.container.parentNode.replaceChild(iframeElement, this.container);
 
     const iframeDoc = iframeElement.contentDocument;
+    iframeDoc.body.style.margin = "0";
     const videoElement = iframeDoc.createElement("video");
     videoElement.innerHTML = `
       <source src="${path}" type="video/mp4">
